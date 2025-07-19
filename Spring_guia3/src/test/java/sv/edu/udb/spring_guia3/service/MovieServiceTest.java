@@ -11,34 +11,35 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Por cuestiones didacticas utilizamos la anotacion
- * de @SpringBootTest para poder levantar un contexto de spring
- * y poder hacer las pruebas de integracion sobre inyeccion de
- * dependencias. EN LA PRACTICA SE HACE TESTING POR CAPAS
- */
 @SpringBootTest
-public class MovieServiceTest {
+class MovieServiceTest {
+
     @Autowired
     private MovieServiceImpl movieService;
+
     @Test
     void shouldMovieServiceNotNull_When_SpringContextWorks() {
         assertNotNull(movieService);
     }
+
     @Test
-    void shouldMovieRepositoryNotNul_When_DIWorks() {
+    void shouldMovieRepositoryNotNull_When_DIWorks() {
         assertNotNull(movieService.getMovieRepository());
     }
+
     @Test
     void shouldGetAMovie_When_TheMovieIdExists() {
         final Long expectedMovieId = 1L;
         final String expectedMovieName = "Inception";
         final Integer expectedReleaseYear = 2010;
+
         final Movie actualMovie = movieService.findMovieById(expectedMovieId);
+
         assertEquals(actualMovie.getId(), expectedMovieId);
         assertEquals(actualMovie.getName(), expectedMovieName);
         assertEquals(actualMovie.getReleaseYear(), expectedReleaseYear);
     }
+
     @Test
     void shouldThrowNoSuchElementException_When_MovieIdDoesNotExists() {
         final Long fakeId = 4L;
@@ -48,4 +49,31 @@ public class MovieServiceTest {
         assertEquals(expectedErrorMessage, exception.getMessage());
     }
 
+    // --- Nuevos casos de prueba agregados ---
+    @Test
+    void shouldReturnCorrectMovieType_When_MovieIdExists() {
+        final Long expectedMovieId = 2L;
+        final String expectedMovieType = "Science Fiction Thriller";
+
+        final Movie actualMovie = movieService.findMovieById(expectedMovieId);
+
+        assertEquals(expectedMovieType, actualMovie.getType());
+    }
+
+    @Test
+    void shouldRepositoryContainMovies_When_Initialized() {
+        assertNotNull(movieService.getMovieRepository().findMovieById(1L));
+        assertNotNull(movieService.getMovieRepository().findMovieById(2L));
+        assertNotNull(movieService.getMovieRepository().findMovieById(3L));
+    }
+
+    @Test
+    void shouldThrowNoSuchElementException_When_MovieIdIsNull() {
+        final String expectedErrorMessage = "Movie doesn't exists";
+
+        final Exception exception = assertThrows(NoSuchElementException.class,
+                () -> movieService.findMovieById(null));
+
+        assertEquals(expectedErrorMessage, exception.getMessage());
+    }
 }

@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @Builder // ¡Esta anotación genera el Builder!
 @NoArgsConstructor // Default constructor
-@AllArgsConstructor //All attribute constructor
+@AllArgsConstructor //All attribute constructorsd
 public class Movie {
     private Long id;
     private String name;
